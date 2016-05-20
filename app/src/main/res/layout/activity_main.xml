@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.goweii.mycalc.MainActivity">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="18"
+        android:background="@color/colorEditTextBackground"
+        android:id="@+id/editText_in"
+        android:minLines="5"
+        android:textSize="20sp"
+        android:textColor="@color/colorEditTextText"
+        tools:text="INPUT 102938374756"
+        android:paddingEnd="10sp"
+        android:paddingStart="10sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <com.chenjishi.slideupdemo.SlidingUpPaneLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/sliding_up_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/bottom_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical">
+
+                <include layout="@layout/history_main"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/top_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical">
+
+                <include layout="@layout/content_main"/>
+
+            </LinearLayout>
+        </com.chenjishi.slideupdemo.SlidingUpPaneLayout>
+
+    </RelativeLayout>
+</LinearLayout>
