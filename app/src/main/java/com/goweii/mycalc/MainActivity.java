@@ -134,6 +134,10 @@ public class MainActivity extends Activity {
         editTextOut.setInputType(InputType.TYPE_NULL);
 
 
+        Button button_menu_setting = (Button) this.findViewById(R.id.button_menu_setting);
+        Button button_menu_about = (Button) this.findViewById(R.id.button_menu_about);
+        Button button_menu_quit = (Button) this.findViewById(R.id.button_menu_quit);
+
         Button button_pai = (Button) this.findViewById(R.id.button_pai);
         Button button_e = (Button) this.findViewById(R.id.button_e);
         Button button_fai = (Button) this.findViewById(R.id.button_fai);
@@ -182,6 +186,10 @@ public class MainActivity extends Activity {
         Button button_deng = (Button) this.findViewById(R.id.button_deng);
         Button button_del = (Button) this.findViewById(R.id.button_del);
 
+
+        button_menu_setting.setOnClickListener(new ButtonClickListener_menu_setting());
+        button_menu_about.setOnClickListener(new ButtonClickListener_menu_about());
+        button_menu_quit.setOnClickListener(new ButtonClickListener_menu_quit());
 
         button_pai.setOnClickListener(new ButtonClickListener_pai());
         button_e.setOnClickListener(new ButtonClickListener_e());
@@ -302,6 +310,38 @@ public class MainActivity extends Activity {
         strO1 = textViewO1.getText().toString();
         strIn = editTextIn.getText().toString();
         strOut = editTextOut.getText().toString();
+    }
+
+    // ---------------------------------------------------------------------------------
+    private final class ButtonClickListener_menu_setting implements View.OnClickListener
+    {
+        public void onClick(View v) {
+
+        }
+    }
+    // ---------------------------------------------------------------------------------
+    private final class ButtonClickListener_menu_about implements View.OnClickListener
+    {
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            MainActivity.this.startActivity(intent);
+            MainActivity.this.overridePendingTransition(R.anim.about_enter, R.anim.about_out);
+        }
+    }// ---------------------------------------------------------------------------------
+    private final class ButtonClickListener_menu_quit implements View.OnClickListener
+    {
+        public void onClick(View v) {
+            saveAndRead.save(strIn, strOut,
+                    strI1, strO1,
+                    strI2, strO2,
+                    strI3, strO3,
+                    strI4, strO4,
+                    strI5, strO5,
+                    strI6, strO6,
+                    strI7, strO7,
+                    strI8, strO8);
+            MainActivity.this.finish();
+        }
     }
 
     @Override

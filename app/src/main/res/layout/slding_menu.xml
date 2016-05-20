@@ -15,7 +15,7 @@
         sliding:touchModeAbove="margin"
         sliding:touchModeBehind="fullscreen"
         sliding:shadowDrawable="@drawable/shadow"
-        sliding:shadowWidth="3dp"
+        sliding:shadowWidth="15dp"
         sliding:behindWidth="300dp"
         sliding:behindScrollScale="1"
         sliding:fadeEnabled="true"

@@ -16,5 +16,8 @@
     <string name="output_number_format_decimal">DECIMAL</string>
     <string name="output_number_format_percentage">PERCENTAGE</string>
     <string name="output_number_format_scientific">SCIENTIFIC</string>
+    <string name="menu_setting">Setting</string>
+    <string name="menu_about">About</string>
+    <string name="menu_quit">Quit</string>
 
 </resources>
