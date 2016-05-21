@@ -8,11 +8,11 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="18"
+        android:layout_height="wrap_content"
+        android:minLines="2"
         android:background="@color/colorEditTextBackground"
         android:id="@+id/editText_in"
-        android:minLines="5"
+        android:maxLines="5"
         android:textSize="20sp"
         android:textColor="@color/colorEditTextText"
         tools:text="INPUT 102938374756"
@@ -21,8 +21,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
         <com.chenjishi.slideupdemo.SlidingUpPaneLayout
             xmlns:android="http://schemas.android.com/apk/res/android"

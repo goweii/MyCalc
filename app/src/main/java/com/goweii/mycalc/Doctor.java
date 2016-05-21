@@ -5,49 +5,52 @@ import java.text.DecimalFormat;
 
 public class Doctor
 {
-	private String input;
+	private String inputExpression;
 	private String result;
-	private int error = 0;
+	private int correct = 0;
+	private final String STRING_PAI = "3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196442881097566593344612847564823378678316527120190914564856692346034861045432664821339360726024914127372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160943305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912983367336244065664308602139494639522473719070217986094370277053921717629317675238467481846766940513200056812714526356082778577134275778960917363717872146844090122495343014654958537105079227968925892354201995611212902196086403441815981362977477130996051870721134999999837297804995105973173281609631859502445945534690830264252230825334468503526193118817101000313783875288658753320838142061717766914730359825349042875546873115956286388235378759375195778185778053217122680661300192787661119590921642019893809525720106548586327886593615338182796823030195203530185296899577362259941389124972177528347913151";
+	private final String STRING_E = "2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274";
+	private final String STRING_FAI = "1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374847540880753868917521266338622235369317931800607667263544333890865959395829056383226613199282902678806752087668925017116962070322210432162695486262963136144381497587012203408058879544547492461856953648644492410443207713449470495658467885098743394422125448770664780915884607499887124007652170575179788341662562494075890697040002812104276217711177780531531714101170466659914669798731761356006708748071013179523689427521948435305678300228785699782977834784587822891109762500302696156170025046433824377648610283831268330372429267526311653392473167111211588186385133162038400522216579128667529465490681131715993432359734949850904094762132229810172610705961164562990981629055520852479035240602017279974717534277759277862561943208275051312181562855122248093947123414517022373580577278616008688382952304592647878017889921990270776903895321968198615143780314997411069260886742962267575605231727775203536139362107673893764556060605922";
 
 	public void di1()			//判断输入是否以数字结尾！！
 	{
-		if (!(input.endsWith("π") || input.endsWith("e")
-				|| input.endsWith("Φ") || input.endsWith("%")
-				|| input.endsWith("²") || input.endsWith("!")
-				|| input.endsWith("1") || input.endsWith("2")
-				|| input.endsWith("3") || input.endsWith("4")
-				|| input.endsWith("5") || input.endsWith("6")
-				|| input.endsWith("7") || input.endsWith("8")
-				|| input.endsWith("9") || input.endsWith("0")
-				|| input.endsWith(")")))
+		if (!(inputExpression.endsWith("π") || inputExpression.endsWith("e")
+				|| inputExpression.endsWith("Φ") || inputExpression.endsWith("%")
+				|| inputExpression.endsWith("²") || inputExpression.endsWith("!")
+				|| inputExpression.endsWith("1") || inputExpression.endsWith("2")
+				|| inputExpression.endsWith("3") || inputExpression.endsWith("4")
+				|| inputExpression.endsWith("5") || inputExpression.endsWith("6")
+				|| inputExpression.endsWith("7") || inputExpression.endsWith("8")
+				|| inputExpression.endsWith("9") || inputExpression.endsWith("0")
+				|| inputExpression.endsWith(")")))
 		{
-			input = "ERROR: cannot end with '" + input.charAt(input.length() - 1) + "'";
-			error = 1;
+			inputExpression = "ERROR: cannot end with '" + inputExpression.charAt(inputExpression.length() - 1) + "'";
+			correct = 1;
 		}
 		else {
-			error = 0;
+			correct = 0;
 		}
-		System.out.println(input);
+		System.out.println(inputExpression);
 	}
 
 	public void di2()			//判断输入首部是否真确
 	{
-		if (input.indexOf("㏒") == 0)
+		if (inputExpression.indexOf("㏒") == 0)
 		{
-			input = "ERROR: cannot start with '㏒'";
-			error = 1;
+			inputExpression = "ERROR: cannot start with '㏒'";
+			correct = 1;
 		}
 		else {
-			error = 0;
+			correct = 0;
 		}
-		System.out.println(input);
+		System.out.println(inputExpression);
 	}
 
 	public void di3()			//判断（）的数量是否相等！！
 	{
 		int num1 = 0;
 		int num2 = 0;
-		char[] chars = input.toCharArray();
+		char[] chars = inputExpression.toCharArray();
 		for (int i = 0; i < chars.length; i++)
 			if (chars[i] == '(')
 				num1++;
@@ -56,20 +59,20 @@ public class Doctor
 				num2++;
 		if (num1 != num2)
 		{
-			input = "ERROR: the number of '(' and ')'";
-			error = 1;
+			inputExpression = "ERROR: the number of '(' and ')'";
+			correct = 1;
 		}
 		else {
-			error = 0;
+			correct = 0;
 		}
-		System.out.println(input);
+		System.out.println(inputExpression);
 	}
 
 	public void di4()			//判断（）的顺序是否正确！
 	{
 		int num1 = 0;
 		int num2 = 0;
-		char[] chars = input.toCharArray();
+		char[] chars = inputExpression.toCharArray();
 		for (int j = 0; j < chars.length; j++)
 		{
 			for (int i = 0; i < chars.length - j; i++)
@@ -80,34 +83,34 @@ public class Doctor
 					num2++;
 			if (num1 < num2)
 			{
-				input = "ERROR: the order of '(' and ')'";
-				error = 1;
+				inputExpression = "ERROR: the order of '(' and ')'";
+				correct = 1;
 				break;
 			}
 			else {
-				error = 0;
+				correct = 0;
 			}
 		}
-		System.out.println(input);
+		System.out.println(inputExpression);
 	}
 
 	public void di5()			//判断是否有两个小数点的数据！！！
 	{
-		String doublexiaoshudian = input.replaceAll("[0-9]+\\.[0-9]+\\.[0-9]", "double.");
+		String doublexiaoshudian = inputExpression.replaceAll("[0-9]+\\.[0-9]+\\.[0-9]", "double.");
 		if (doublexiaoshudian.indexOf("double.") > -1)
 		{
-			input = "ERROR: a number has more '.'";
-			error = 1;
+			inputExpression = "ERROR: a number has more '.'";
+			correct = 1;
 		}
 		else {
-			error = 0;
+			correct = 0;
 		}
-		System.out.println(input);
+		System.out.println(inputExpression);
 	}
 
 	public void di6()			//判断是否有连接错误！！！
 	{
-		String string = input;
+		String string = inputExpression;
 		string = string.replace("(-", "(0-");
 		string = string.replace("+", "#");
 		string = string.replace("-", "#");
@@ -136,119 +139,119 @@ public class Doctor
 				string.indexOf("#)") > -1 || string.indexOf("&)") > -1
 				|| string.indexOf("~") > -1)
 		{
-			error = 1;
-			input = "ERROR: order of connection has wrong";
+			correct = 1;
+			inputExpression = "ERROR: order of connection has wrong";
 		} else
 		{
-			error = 0;
+			correct = 0;
 		}
 	}
 
 	public void di7()			//修正input!!!
 	{
-		input = input.replace("×", "*");
-		input = input.replace("÷", "/");
-		input = input.replace(")", "+0)"); // 避免（123）情况崩溃
-		input = input.replace("(-", "(0-"); // 避免（-123）情况崩溃
-		input = input.replace("(", "(0+"); //避免（1*1）情况崩溃
-		input = input.replace("%", "/100)");
-		input = input.replace("²√", "2√");
-		input = input.replace("²", "^2");
-		input = input.replace("lg", "10g");
-		input = input.replace("㏑", "eg");
-		input = input.replace("㏒", "g");
-		input = input.replace("asin", "1d");
-		input = input.replace("acos", "1v");
-		input = input.replace("atan", "1y");
-		input = input.replace("sin", "1s");
-		input = input.replace("cos", "1c");
-		input = input.replace("tan", "1t");
-		input = input.replace("!", "!1");
+		inputExpression = inputExpression.replace("×", "*");
+		inputExpression = inputExpression.replace("÷", "/");
+		inputExpression = inputExpression.replace(")", "+0)"); // 避免（123）情况崩溃
+		inputExpression = inputExpression.replace("(-", "(0-"); // 避免（-123）情况崩溃
+		inputExpression = inputExpression.replace("(", "(0+"); //避免（1*1）情况崩溃
+		inputExpression = inputExpression.replace("%", "/100)");
+		inputExpression = inputExpression.replace("²√", "2√");
+		inputExpression = inputExpression.replace("²", "^2");
+		inputExpression = inputExpression.replace("lg", "10g");
+		inputExpression = inputExpression.replace("㏑", "eg");
+		inputExpression = inputExpression.replace("㏒", "g");
+		inputExpression = inputExpression.replace("asin", "1d");
+		inputExpression = inputExpression.replace("acos", "1v");
+		inputExpression = inputExpression.replace("atan", "1y");
+		inputExpression = inputExpression.replace("sin", "1s");
+		inputExpression = inputExpression.replace("cos", "1c");
+		inputExpression = inputExpression.replace("tan", "1t");
+		inputExpression = inputExpression.replace("!", "!1");
 		//----------------------πeΦ--------------------------
-		input = input.replace("ππ", "(π*π)");
-		input = input.replace("ee", "(e*e)");
-		input = input.replace("ΦΦ", "(Φ*Φ)");
-		input = input.replace("πe", "(π*e)");
-		input = input.replace("πΦ", "(π*Φ)");
-		input = input.replace("eΦ", "(e*Φ)");
-		input = input.replace("eπ", "(e*π)");
-		input = input.replace("Φπ", "(Φ*π)");
-		input = input.replace("Φe", "(Φ*e)");
-		//-------------------pai--------------------------------
-		input = input.replace(")π", ")*3.1415926535897932");
-		input = input.replace("0π", "0*3.1415926535897932");
-		input = input.replace("1π", "1*3.1415926535897932");
-		input = input.replace("2π", "2*3.1415926535897932");
-		input = input.replace("3π", "3*3.1415926535897932");
-		input = input.replace("4π", "4*3.1415926535897932");
-		input = input.replace("5π", "5*3.1415926535897932");
-		input = input.replace("6π", "6*3.1415926535897932");
-		input = input.replace("7π", "7*3.1415926535897932");
-		input = input.replace("8π", "8*3.1415926535897932");
-		input = input.replace("9π", "9*3.1415926535897932");
-		input = input.replace("π", "3.1415926535897932");
+		inputExpression = inputExpression.replace("ππ", "(π*π)");
+		inputExpression = inputExpression.replace("ee", "(e*e)");
+		inputExpression = inputExpression.replace("ΦΦ", "(Φ*Φ)");
+		inputExpression = inputExpression.replace("πe", "(π*e)");
+		inputExpression = inputExpression.replace("πΦ", "(π*Φ)");
+		inputExpression = inputExpression.replace("eΦ", "(e*Φ)");
+		inputExpression = inputExpression.replace("eπ", "(e*π)");
+		inputExpression = inputExpression.replace("Φπ", "(Φ*π)");
+		inputExpression = inputExpression.replace("Φe", "(Φ*e)");
+		//-------------------STRING_PAI--------------------------------
+		inputExpression = inputExpression.replace(")π", ")*" + STRING_PAI);
+		inputExpression = inputExpression.replace("0π", "0*" + STRING_PAI);
+		inputExpression = inputExpression.replace("1π", "1*" + STRING_PAI);
+		inputExpression = inputExpression.replace("2π", "2*" + STRING_PAI);
+		inputExpression = inputExpression.replace("3π", "3*" + STRING_PAI);
+		inputExpression = inputExpression.replace("4π", "4*" + STRING_PAI);
+		inputExpression = inputExpression.replace("5π", "5*" + STRING_PAI);
+		inputExpression = inputExpression.replace("6π", "6*" + STRING_PAI);
+		inputExpression = inputExpression.replace("7π", "7*" + STRING_PAI);
+		inputExpression = inputExpression.replace("8π", "8*" + STRING_PAI);
+		inputExpression = inputExpression.replace("9π", "9*" + STRING_PAI);
+		inputExpression = inputExpression.replace("π", STRING_PAI);
 		//--------------------e-------------------------------
-		input = input.replace(")e", ")*2.7182818284590452");
-		input = input.replace("0e", "0*2.7182818284590452");
-		input = input.replace("1e", "1*2.7182818284590452");
-		input = input.replace("2e", "2*2.7182818284590452");
-		input = input.replace("3e", "3*2.7182818284590452");
-		input = input.replace("4e", "4*2.7182818284590452");
-		input = input.replace("5e", "5*2.7182818284590452");
-		input = input.replace("6e", "6*2.7182818284590452");
-		input = input.replace("7e", "7*2.7182818284590452");
-		input = input.replace("8e", "8*2.7182818284590452");
-		input = input.replace("9e", "9*2.7182818284590452");
-		input = input.replace("e", "2.7182818284590452");
+		inputExpression = inputExpression.replace(")e", ")*" + STRING_E);
+		inputExpression = inputExpression.replace("0e", "0*" + STRING_E);
+		inputExpression = inputExpression.replace("1e", "1*" + STRING_E);
+		inputExpression = inputExpression.replace("2e", "2*" + STRING_E);
+		inputExpression = inputExpression.replace("3e", "3*" + STRING_E);
+		inputExpression = inputExpression.replace("4e", "4*" + STRING_E);
+		inputExpression = inputExpression.replace("5e", "5*" + STRING_E);
+		inputExpression = inputExpression.replace("6e", "6*" + STRING_E);
+		inputExpression = inputExpression.replace("7e", "7*" + STRING_E);
+		inputExpression = inputExpression.replace("8e", "8*" + STRING_E);
+		inputExpression = inputExpression.replace("9e", "9*" + STRING_E);
+		inputExpression = inputExpression.replace("e", STRING_E);
 		//--------------------fai-----------------------------
-		input = input.replace(")Φ", ")*6.1803398874989485");
-		input = input.replace("0Φ", "0*6.1803398874989485");
-		input = input.replace("1Φ", "1*6.1803398874989485");
-		input = input.replace("2Φ", "2*6.1803398874989485");
-		input = input.replace("3Φ", "3*6.1803398874989485");
-		input = input.replace("4Φ", "4*6.1803398874989485");
-		input = input.replace("5Φ", "5*6.1803398874989485");
-		input = input.replace("6Φ", "6*6.1803398874989485");
-		input = input.replace("7Φ", "7*6.1803398874989485");
-		input = input.replace("8Φ", "8*6.1803398874989485");
-		input = input.replace("9Φ", "9*6.1803398874989485");
-		input = input.replace("Φ", "6.1803398874989485");
+		inputExpression = inputExpression.replace(")Φ", ")*" + STRING_FAI);
+		inputExpression = inputExpression.replace("0Φ", "0*" + STRING_FAI);
+		inputExpression = inputExpression.replace("1Φ", "1*" + STRING_FAI);
+		inputExpression = inputExpression.replace("2Φ", "2*" + STRING_FAI);
+		inputExpression = inputExpression.replace("3Φ", "3*" + STRING_FAI);
+		inputExpression = inputExpression.replace("4Φ", "4*" + STRING_FAI);
+		inputExpression = inputExpression.replace("5Φ", "5*" + STRING_FAI);
+		inputExpression = inputExpression.replace("6Φ", "6*" + STRING_FAI);
+		inputExpression = inputExpression.replace("7Φ", "7*" + STRING_FAI);
+		inputExpression = inputExpression.replace("8Φ", "8*" + STRING_FAI);
+		inputExpression = inputExpression.replace("9Φ", "9*" + STRING_FAI);
+		inputExpression = inputExpression.replace("Φ", STRING_FAI);
 
-		input = input.replace(")", "+0)"); // 避免（123）情况崩溃
-		input = input.replace("(-", "(0-"); // 避免（-123）情况崩溃
-		input = input.replace("(", "(0+"); //避免（1*1）情况崩溃
+		inputExpression = inputExpression.replace(")", "+0)"); // 避免（123）情况崩溃
+		inputExpression = inputExpression.replace("(-", "(0-"); // 避免（-123）情况崩溃
+		inputExpression = inputExpression.replace("(", "(0+"); //避免（1*1）情况崩溃
 
-		input = "0+" + input;
-		System.out.println(input);
+		inputExpression = "0+" + inputExpression;
+		System.out.println(inputExpression);
 	}
 
 	public String di(String str)
 	{
-		input = str;
+		inputExpression = str;
 		di1();
-		if (error == 0)
+		if (correct == 0)
 		{
 			di2();
-			if (error == 0)
+			if (correct == 0)
 			{
 				di3();
-				if (error == 0)
+				if (correct == 0)
 				{
 					di4();
-					if (error == 0)
+					if (correct == 0)
 						di5();
 					{
-						if (error == 0)
+						if (correct == 0)
 							di6();
 						{
-							if (error == 0)
+							if (correct == 0)
 								di7();
 						}
 					}
 				}
 			}
 		}
-		return input;
+		return inputExpression;
 	}
 
 //-----------------------------------------------------------------------------	
