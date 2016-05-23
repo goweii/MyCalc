@@ -10,7 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/libraryMaterialRipple" />
+            <option value="$PROJECT_DIR$/librarySlidingMenu" />
             <option value="$PROJECT_DIR$/slidingUpPaneLayoutmaster" />
           </set>
         </option>
@@ -18,7 +19,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/libraryMaterialRipple" />
+            <option value="$PROJECT_DIR$/librarySlidingMenu" />
             <option value="$PROJECT_DIR$/slidingUpPaneLayoutmaster" />
           </set>
         </option>

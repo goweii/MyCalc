@@ -13,7 +13,7 @@
         sliding:viewAbove="@layout/activity_main"
         sliding:viewBehind="@layout/menu_layout"
         sliding:touchModeAbove="margin"
-        sliding:touchModeBehind="fullscreen"
+        sliding:touchModeBehind="margin"
         sliding:shadowDrawable="@drawable/shadow"
         sliding:shadowWidth="15dp"
         sliding:behindWidth="300dp"

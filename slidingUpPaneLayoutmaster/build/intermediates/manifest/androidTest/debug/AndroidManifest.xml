@@ -3,7 +3,7 @@
     package="com.chenjishi.slideupdemo.test" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="21" />
 
     <instrumentation

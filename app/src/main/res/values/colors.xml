@@ -7,5 +7,7 @@
     <color name="colorNavigationBar">#1B1B1B</color>
     <color name="colorEditTextBackground">#ffffff</color>
     <color name="colorEditTextText">#1B1B1B</color>
+    <color name="colorButton">#1B1B1B</color>
     <color name="colorButtonText">#ffffff</color>
+    <color name="colorRipple">#585858</color>
 </resources>

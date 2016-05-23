@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -190,6 +188,8 @@ public class MainActivity extends Activity {
         Button button_deng = (Button) this.findViewById(R.id.button_deng);
         Button button_del = (Button) this.findViewById(R.id.button_del);
 
+        Button button_history_clean = (Button) this.findViewById(R.id.button_history_clean);
+        button_history_clean.setOnClickListener(new ButtonClickListener_history_clean());
 
         button_menu_setting.setOnClickListener(new ButtonClickListener_menu_setting());
         button_menu_about.setOnClickListener(new ButtonClickListener_menu_about());
@@ -346,40 +346,6 @@ public class MainActivity extends Activity {
             MainActivity.this.finish();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (item.getItemId() == R.id.action_about) {
-            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-            MainActivity.this.startActivity(intent);
-            MainActivity.this.overridePendingTransition(R.anim.about_enter, R.anim.about_out);
-//			Toast.makeText(this, "about", Toast.LENGTH_SHORT).show();
-        }
-
-        if (item.getItemId() == R.id.action_exit) {
-            saveAndRead.save(strIn, strOut,
-                    strI1, strO1,
-                    strI2, strO2,
-                    strI3, strO3,
-                    strI4, strO4,
-                    strI5, strO5,
-                    strI6, strO6,
-                    strI7, strO7,
-                    strI8, strO8);
-            MainActivity.this.finish();
-//			Toast.makeText(this, "about", Toast.LENGTH_SHORT).show();
-        }
-        return true;
-    }
-
 
     // ---------------------------------------------------------------------------------
     private final class ButtonClickListener_1 implements View.OnClickListener {
@@ -935,7 +901,7 @@ public class MainActivity extends Activity {
             } else if (newIndex != index) {
                 editTextIn.setSelection(newIndex);
             } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == '(' ||
+                    edit.charAt(index - 1) == ')' ||
                     edit.charAt(index - 1) == 'π' ||
                     edit.charAt(index - 1) == 'e' ||
                     edit.charAt(index - 1) == 'Φ')
@@ -958,7 +924,7 @@ public class MainActivity extends Activity {
             } else if (newIndex != index) {
                 editTextIn.setSelection(newIndex);
             } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == '(' ||
+                    edit.charAt(index - 1) == ')' ||
                     edit.charAt(index - 1) == 'π' ||
                     edit.charAt(index - 1) == 'e' ||
                     edit.charAt(index - 1) == 'Φ')
@@ -1129,7 +1095,7 @@ public class MainActivity extends Activity {
             } else if (newIndex != index) {
                 editTextIn.setSelection(newIndex);
             } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == '(' ||
+                    edit.charAt(index - 1) == ')' ||
                     edit.charAt(index - 1) == 'π' ||
                     edit.charAt(index - 1) == 'e' ||
                     edit.charAt(index - 1) == 'Φ') {
@@ -1153,7 +1119,7 @@ public class MainActivity extends Activity {
             } else if (newIndex != index) {
                 editTextIn.setSelection(newIndex);
             } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == '(' ||
+                    edit.charAt(index - 1) == ')' ||
                     edit.charAt(index - 1) == 'π' ||
                     edit.charAt(index - 1) == 'e' ||
                     edit.charAt(index - 1) == 'Φ') {
@@ -1555,20 +1521,18 @@ private final class ButtonClickListener_deng implements View.OnClickListener {
     public void onClick(View v) {
         if (editTextIn.length() == 0) {
         } else {
-            String inputString = editTextIn.getText().toString();
-            Doctor doctor = new Doctor();
-            inputString = doctor.di(inputString);
-            if (inputString.startsWith("ERROR")) {
-                editTextOut.setText(inputString);
+            String strEditTextIn = editTextIn.getText().toString();
+            Doctor doctor = new Doctor(strEditTextIn);
+            InputConnect inputConnect = new InputConnect(strEditTextIn);
+            String strEditTextOut = inputConnect.checkConnect();
+            if (strEditTextOut.startsWith("ERROR")){
+                editTextOut.setText(strEditTextOut);
             } else {
-                expression result = new expression(inputString);//计算结果
+                strEditTextIn = doctor.getNewInputExpression();
+                expression result = new expression(strEditTextIn);//计算结果
                 String resultString = result.getresult();    //得到结果
-                if (inputString.startsWith("ERROR")) {
-                    editTextOut.setText(resultString);
-                } else {
-                    resultString = doctor.dr(resultString);
-                    editTextOut.setText(resultString);
-                }
+                resultString = doctor.getResult(resultString);
+                editTextOut.setText(resultString);
             }
         }
         //-----历史记录-----
@@ -2131,5 +2095,24 @@ private final class ButtonClickListener_o8 implements View.OnClickListener {
                 strI7, strO7,
                 strI8, strO8);
     }
-
+    private final class ButtonClickListener_history_clean implements View.OnClickListener {
+        public void onClick(View v) {
+            textViewI8.setText("");
+            textViewO8.setText("");
+            textViewI7.setText("");
+            textViewO7.setText("");
+            textViewI6.setText("");
+            textViewO6.setText("");
+            textViewI5.setText("");
+            textViewO5.setText("");
+            textViewI4.setText("");
+            textViewO4.setText("");
+            textViewI3.setText("");
+            textViewO3.setText("");
+            textViewI2.setText("");
+            textViewO2.setText("");
+            textViewI1.setText("");
+            textViewO1.setText("");
+        }
+    }
 }
