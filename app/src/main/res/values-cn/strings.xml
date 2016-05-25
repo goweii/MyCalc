@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">科学计算器</string>
-    <string name="action_about">关于</string>
-    <string name="action_exit">退出</string>
-    <string name="title_activity_about">关于</string>
+    <string name="app_name">MyCalc</string>
     <string name="action_settings">设置</string>
-    <string name="about">关于:</string>
-    <string name="about_name">产品名称：科学计算器</string>
+    <string name="doubletoexit">双击退出</string>
+    <string name="about">关于</string>
+    <string name="about_name">MyCalc</string>
     <string name="about_version">版本号：公测版2.1.1</string>
     <string name="about_date">发布日期：2015年5月23日</string>
-    <string name="about_email">邮箱：goweii@163.com</string>
-    <string name="about_developer">发布者：goweii</string>
+    <string name="about_developer">开发者：Goweii</string>
+    <string name="about_email">邮箱:goweii@163.com</string>
     <string name="about_button">返回</string>
-    <string name="doubletoexit">再按一次退出</string>
+    <string name="action_about">关于</string>
+    <string name="action_quit">退出</string>
+    <string name="title_activity_splash">Splash</string>
+    <string name="title_activity_about">关于</string>
+    <string name="output_number_format_decimal">DECIMAL</string>
+    <string name="output_number_format_percentage">PERCENTAGE</string>
+    <string name="output_number_format_scientific">SCIENTIFIC</string>
+    <string name="menu_setting">设置</string>
+    <string name="menu_about">关于</string>
+    <string name="menu_quit">退出</string>
+    <string name="history_clean">清空</string>
 
 </resources>

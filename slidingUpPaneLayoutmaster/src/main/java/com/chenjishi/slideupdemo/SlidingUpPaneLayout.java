@@ -40,9 +40,7 @@ public class SlidingUpPaneLayout extends ViewGroup {
     /**
      * 设置下滑后前面板剩余的宽度
      */
-//    MainActivity mainActivity = new MainActivity();
-//    private int appArea = mainActivity.getAppArea();
-    private static final int DEFAULT_OVERHANG_SIZE = 35; // dp;
+    public static final int DEFAULT_OVERHANG_SIZE = 35; // dp;
 
     /**
      * If no fade color is given by default it will fade to 80% gray.

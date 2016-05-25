@@ -26,4 +26,5 @@ dependencies {
     compile project(':librarySlidingMenu')
     compile project(':slidingUpPaneLayoutmaster')
     compile project(':libraryMaterialRipple')
+    compile files('libs/YoumiSdk_v6.1.0_2016-02-26.jar')
 }

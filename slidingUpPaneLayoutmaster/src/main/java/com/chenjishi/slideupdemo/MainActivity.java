@@ -7,7 +7,8 @@ public class MainActivity extends Activity {
 //    /**
 //     * 计算应用区域高度（仅去除状态栏后高度）
 //     */
-//    public int appArea;/**
+//    public int appArea;
+//    /**
 //     * 获取状态栏高度
 //     */
 //    Rect frame = new Rect();
@@ -33,7 +34,7 @@ public class MainActivity extends Activity {
 //      DisplayMetrics dm = new DisplayMetrics();
 //      this.getWindowManager().getDefaultDisplay().getMetrics(dm);//this指当前activity
 //      screenHeight = dm.heightPixels;
-//
+////
 //      Log.i("appArea", "" + getAppArea(statusBarHeight, screenHeight));
 
         super.onCreate(savedInstanceState);

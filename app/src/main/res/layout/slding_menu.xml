@@ -14,12 +14,12 @@
         sliding:viewBehind="@layout/menu_layout"
         sliding:touchModeAbove="margin"
         sliding:touchModeBehind="margin"
-        sliding:shadowDrawable="@drawable/shadow"
-        sliding:shadowWidth="15dp"
-        sliding:behindWidth="300dp"
-        sliding:behindScrollScale="1"
+        sliding:shadowDrawable="@drawable/slidingmenu_shadow"
+        sliding:shadowWidth="10sp"
+        sliding:behindWidth="250dp"
+        sliding:behindScrollScale="0.5"
         sliding:fadeEnabled="true"
-        sliding:fadeDegree="0.3"
+        sliding:fadeDegree="0.8"
         sliding:selectorEnabled="true">
     </com.jeremyfeinstein.slidingmenu.lib.SlidingMenu>
 

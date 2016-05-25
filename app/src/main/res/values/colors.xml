@@ -6,6 +6,7 @@
     <color name="colorStatusBar">#1B1B1B</color>
     <color name="colorNavigationBar">#1B1B1B</color>
     <color name="colorEditTextBackground">#ffffff</color>
+    <color name="colorHistoryEditTextBackground">#eeeeee</color>
     <color name="colorEditTextText">#1B1B1B</color>
     <color name="colorButton">#1B1B1B</color>
     <color name="colorButtonText">#ffffff</color>
