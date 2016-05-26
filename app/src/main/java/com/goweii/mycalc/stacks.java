@@ -2,25 +2,25 @@ package com.goweii.mycalc;
 
 import java.util.LinkedList;
 
-public class stacks{
-	
-	private LinkedList list=new LinkedList();
-	int top=-1;
+public class Stacks {
 
-	public void push(Object value){
-		top++;
-		list.addFirst(value);
-	}
+    private LinkedList list = new LinkedList();
+    int top = -1;
 
-	public Object pop(){
-		Object temp=list.getFirst();
-		top--;
-		list.removeFirst();
-		return temp;
-	}
+    public void push(Object value) {
+        top++;
+        list.addFirst(value);
+    }
 
-	public Object top(){
-		return list.getFirst();
-	}
+    public Object pop() {
+        Object temp = list.getFirst();
+        top--;
+        list.removeFirst();
+        return temp;
+    }
+
+    public Object top() {
+        return list.getFirst();
+    }
 
 }

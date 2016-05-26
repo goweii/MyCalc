@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chenjishi.slideupdemo.SlidingUpPaneLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -88,12 +89,10 @@ public class MainActivity extends Activity {
     private static final String STRINGI = "strIn";
     private static final String STRINGR = "strOut";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.slding_menu);
-
         //设置有米广告
         initYoumiAd();
         //设置SlidingUpPaneLayout相关动画和阴影
@@ -124,6 +123,7 @@ public class MainActivity extends Activity {
             }
         }
         editTextOut.setInputType(InputType.TYPE_NULL);
+
     }
 
     //还原系统杀掉前EditTextIn/Out的数据
@@ -131,6 +131,10 @@ public class MainActivity extends Activity {
         if (null != savedInstanceState) {
             if (savedInstanceState.containsKey(STRINGI)) {
                 editTextIn.setText(savedInstanceState.getString(STRINGI));
+//                //设置新光标位置
+//                int i = editTextIn.getText().toString().length();
+//                System.out.println(i);
+//                editTextIn.setSelection(i);
             }
             if (savedInstanceState.containsKey(STRINGR)) {
                 editTextOut.setText(savedInstanceState.getString(STRINGR));
@@ -442,12 +446,13 @@ public class MainActivity extends Activity {
         inputCurrent = newInputCurrent.getNewInputCurrent();
         //判断新字符是否为空，为空可不可输入报错
         if (inputCurrent == null){
-            editTextOut.setText("ERROR:Illegal connection");
+            editTextOut.setText(getResources().getString(R.string.error_illegal));
         } else {
             editable.insert(index, inputCurrent);
             inputExpression = editTextIn.getText().toString();
             InputConnect inputConnect = new InputConnect(inputExpression);
-            editTextOut.setText(inputConnect.checkConnect());
+            String strEditTextOut = inputConnect.checkConnect();
+            editTextOut.setText(strEditTextOut);
         }
     }
 
@@ -890,8 +895,6 @@ public class MainActivity extends Activity {
 
     /**
      * 等号得到结果！！！
-     *
-     * @author cuizhen
      */
     private final class ButtonClickListener_deng implements View.OnClickListener {
         public void onClick(View v) {
@@ -901,9 +904,9 @@ public class MainActivity extends Activity {
                 Doctor doctor = new Doctor(strEditTextIn);
                 InputConnect inputConnect = new InputConnect(strEditTextIn);
                 String strEditTextOut = inputConnect.checkConnect();
-                if (strEditTextOut.startsWith("ERROR")) {
+                if (strEditTextOut.startsWith("ERROR") || strEditTextOut.startsWith("错误")) {
                     editTextOut.setText(strEditTextOut);
-                } else if(strEditTextOut.startsWith("WARNING")){
+                } else if(strEditTextOut.startsWith("WARNING") || strEditTextOut.startsWith("警告")){
                     int num1 = 0;
                     int num2 = 0;
                     char[] chars = strEditTextIn.toCharArray();
@@ -933,69 +936,77 @@ public class MainActivity extends Activity {
                     strEditTextIn = doctor.getNewInputExpression();
                     Expression expression = new Expression(strEditTextIn);//计算结果
                     String result = expression.getresult();    //得到结果
-                    OutputFormat outputFormat = new OutputFormat(output_number_format, result);
-                    result = outputFormat.getResult();
-                    result = doctor.getResult(result);
+                    double doubleResult = Double.parseDouble(result);
+                    if(Double.isNaN(doubleResult)){
+                        result = getResources().getString(R.string.error_nan);
+                    } else if(Double.isInfinite(doubleResult)){
+                        result = getResources().getString(R.string.error_infinite);
+                    } else {
+                        OutputFormat outputFormat = new OutputFormat(output_number_format, result);
+                        result = outputFormat.getResult();
+                        result = doctor.getResult(result);
+                    }
                     editTextOut.setText(result);
                 }
             }
-            //-----历史记录-----
-            strIn = editTextIn.getText().toString();
-            strOut = editTextOut.getText().toString();
-            strI1 = textViewI1.getText().toString();
-            strO1 = textViewO1.getText().toString();
-            strI2 = textViewI2.getText().toString();
-            strO2 = textViewO2.getText().toString();
-            strI3 = textViewI3.getText().toString();
-            strO3 = textViewO3.getText().toString();
-            strI4 = textViewI4.getText().toString();
-            strO4 = textViewO4.getText().toString();
-            strI5 = textViewI5.getText().toString();
-            strO5 = textViewO5.getText().toString();
-            strI6 = textViewI6.getText().toString();
-            strO6 = textViewO6.getText().toString();
-            strI7 = textViewI7.getText().toString();
-            strO7 = textViewO7.getText().toString();
-            strI8 = textViewI8.getText().toString();
-            strO8 = textViewO8.getText().toString();
-
-            strI8 = strI7;
-            strO8 = strO7;
-            strI7 = strI6;
-            strO7 = strO6;
-            strI6 = strI5;
-            strO6 = strO5;
-            strI5 = strI4;
-            strO5 = strO4;
-            strI4 = strI3;
-            strO4 = strO3;
-            strI3 = strI2;
-            strO3 = strO2;
-            strI2 = strI1;
-            strO2 = strO1;
-            strI1 = strIn;
-            strO1 = strOut;
-
-            textViewI8.setText(strI8);
-            textViewO8.setText(strO8);
-            textViewI7.setText(strI7);
-            textViewO7.setText(strO7);
-            textViewI6.setText(strI6);
-            textViewO6.setText(strO6);
-            textViewI5.setText(strI5);
-            textViewO5.setText(strO5);
-            textViewI4.setText(strI4);
-            textViewO4.setText(strO4);
-            textViewI3.setText(strI3);
-            textViewO3.setText(strO3);
-            textViewI2.setText(strI2);
-            textViewO2.setText(strO2);
-            textViewI1.setText(strI1);
-            textViewO1.setText(strO1);
-            //----------------
+            historyRefresh();
         }
     }
+    private void historyRefresh(){
+        //-----历史记录-----
+        strIn = editTextIn.getText().toString();
+        strOut = editTextOut.getText().toString();
+        strI1 = textViewI1.getText().toString();
+        strO1 = textViewO1.getText().toString();
+        strI2 = textViewI2.getText().toString();
+        strO2 = textViewO2.getText().toString();
+        strI3 = textViewI3.getText().toString();
+        strO3 = textViewO3.getText().toString();
+        strI4 = textViewI4.getText().toString();
+        strO4 = textViewO4.getText().toString();
+        strI5 = textViewI5.getText().toString();
+        strO5 = textViewO5.getText().toString();
+        strI6 = textViewI6.getText().toString();
+        strO6 = textViewO6.getText().toString();
+        strI7 = textViewI7.getText().toString();
+        strO7 = textViewO7.getText().toString();
+        strI8 = textViewI8.getText().toString();
+        strO8 = textViewO8.getText().toString();
 
+        strI8 = strI7;
+        strO8 = strO7;
+        strI7 = strI6;
+        strO7 = strO6;
+        strI6 = strI5;
+        strO6 = strO5;
+        strI5 = strI4;
+        strO5 = strO4;
+        strI4 = strI3;
+        strO4 = strO3;
+        strI3 = strI2;
+        strO3 = strO2;
+        strI2 = strI1;
+        strO2 = strO1;
+        strI1 = strIn;
+        strO1 = strOut;
+
+        textViewI8.setText(strI8);
+        textViewO8.setText(strO8);
+        textViewI7.setText(strI7);
+        textViewO7.setText(strO7);
+        textViewI6.setText(strI6);
+        textViewO6.setText(strO6);
+        textViewI5.setText(strI5);
+        textViewO5.setText(strO5);
+        textViewI4.setText(strI4);
+        textViewO4.setText(strO4);
+        textViewI3.setText(strI3);
+        textViewO3.setText(strO3);
+        textViewI2.setText(strI2);
+        textViewO2.setText(strO2);
+        textViewI1.setText(strI1);
+        textViewO1.setText(strO1);
+    }
 
     //---------历史记录按钮时间。上屏！-------------
     private void ButtonClickListenerHistoryInputProcess(TextView textView){
@@ -1114,6 +1125,7 @@ public class MainActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if ((System.currentTimeMillis() - mExitTime) > 800) {
+                Toast.makeText(this, R.string.doubletoexit, Toast.LENGTH_SHORT).show();
                 mExitTime = System.currentTimeMillis();
             } else {
                 saveAndRead.save(strIn, strOut,
@@ -1175,4 +1187,5 @@ public class MainActivity extends Activity {
             textViewO1.setText("");
         }
     }
+
 }

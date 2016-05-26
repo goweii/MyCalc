@@ -21,4 +21,18 @@
     <string name="menu_quit">Quit</string>
     <string name="history_clean">Clean</string>
 
+    <!--提示信息-->
+    <string name="error_undefined">ERROR:Undefined error</string>
+    <string name="error_cannot_end_with">ERROR:Cannot end with that</string>
+    <string name="error_cannot_start_with">ERROR:Cannot start with that</string>
+    <string name="warning_default_add_at_end">WARNING:The default add brackets at the end</string>
+    <string name="warning_default_add_at_start">WARNING:The default add brackets at the start</string>
+    <string name="error_bracket_order">ERROR:Left and right bracket order error</string>
+    <string name="error_multiple_point">ERROR:Number contains multiple point</string>
+    <string name="error_connection_order">ERROR:Expression connection order error</string>
+    <string name="error_illegal">ERROR:Illegal input</string>
+    <string name="error_nan">ERROR:Invalid input</string>
+    <string name="error_infinite">ERROR:Infinite</string>
+    <string name="true_">TRUE</string>
+
 </resources>

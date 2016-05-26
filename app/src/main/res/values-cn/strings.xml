@@ -23,4 +23,18 @@
     <string name="menu_quit">退出</string>
     <string name="history_clean">清空</string>
 
+    <!--提示信息-->
+    <string name="error_undefined">错误:未知错误</string>
+    <string name="error_cannot_end_with">错误:不能以它结尾</string>
+    <string name="error_cannot_start_with">错误:不能以它结尾</string>
+    <string name="warning_default_add_at_end">警告:默认在末尾补全括号</string>
+    <string name="warning_default_add_at_start">警告:默认在开始补全括号</string>
+    <string name="error_bracket_order">错误:左右括号顺序错误</string>
+    <string name="error_multiple_point">错误:含有多小数点数据</string>
+    <string name="error_connection_order">错误:表达式含有连接错误</string>
+    <string name="error_illegal">错误:非法输入</string>
+    <string name="error_nan">错误:无效输入</string>
+    <string name="error_infinite">错误:无穷</string>
+    <string name="true_">正确</string>
+
 </resources>

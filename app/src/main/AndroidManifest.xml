@@ -3,6 +3,7 @@
     package="com.goweii.mycalc">
 
     <application
+        android:name="com.goweii.mycalc.ContextUtil"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

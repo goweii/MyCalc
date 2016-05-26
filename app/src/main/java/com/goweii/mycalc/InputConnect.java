@@ -4,7 +4,12 @@
 
 package com.goweii.mycalc;
 
+import android.content.Context;
+
 public class InputConnect {
+
+    Context context = ContextUtil.getInstance();
+
     private String inputExpression = "";
     private String correct = "TRUE";
 
@@ -15,42 +20,60 @@ public class InputConnect {
         this.inputExpression = inputExpression;
     }
 
-    /**
-     * 获取点击按键后合成的表达式
-     *
-     * @return
-     */
-    public String getInputExpression() {
-        return inputExpression;
-    }
-
     public String checkConnect() {
         if (inputExpression.length() == 0) {
         } else {
-            if (correct == "TRUE") {
-                checkEndWithNumber();
+            for(boolean i = true; i == true; i = false){
+                if (correct == "TRUE") {
+                    checkEndWithNumber();
+                }
                 if (correct == "TRUE") {
                     checkFirstCharacter();
-                    if (correct == "TRUE") {
-                        CheckBracketSymmetry();
-                        if (correct == "TRUE") {
-                            CheckBracketOrder();
-                            if (correct == "TRUE") {
-                                CheckDecimalPoint();
-                                if (correct == "TRUE") {
-                                    CheckConnectOrder();
-                                }
-                            }
-                        }
-                    }
+                }
+                if (correct == "TRUE") {
+                    CheckBracketSymmetry();
+                }
+                if (correct == "TRUE") {
+                    CheckBracketOrder();
+                }
+                if (correct == "TRUE") {
+                    CheckDecimalPoint();
+                }
+                if (correct == "TRUE") {
+                    CheckConnectOrder();
                 }
             }
         }
         return correct;
     }
+
+//    public String checkConnect() {
+//        if (inputExpression.length() == 0) {
+//        } else {
+//            if (correct == "TRUE") {
+//                checkEndWithNumber();
+//                if (correct == "TRUE") {
+//                    checkFirstCharacter();
+//                    if (correct == "TRUE") {
+//                        CheckBracketSymmetry();
+//                        if (correct == "TRUE") {
+//                            CheckBracketOrder();
+//                            if (correct == "TRUE") {
+//                                CheckDecimalPoint();
+//                                if (correct == "TRUE") {
+//                                    CheckConnectOrder();
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return correct;
+//    }
+
     //判断输入是否以数字结尾！！
-    public void checkEndWithNumber()
-    {
+    public void checkEndWithNumber() {
         if (!(inputExpression.endsWith("π") || inputExpression.endsWith("e")
                 || inputExpression.endsWith("Φ") || inputExpression.endsWith("%")
                 || inputExpression.endsWith("²") || inputExpression.endsWith("!")
@@ -60,24 +83,25 @@ public class InputConnect {
                 || inputExpression.endsWith("7") || inputExpression.endsWith("8")
                 || inputExpression.endsWith("9") || inputExpression.endsWith("0")
                 || inputExpression.endsWith(")"))) {
-            correct = "ERROR: cannot end with that";
+            correct = context.getResources().getString(R.string.error_cannot_end_with);
+            System.out.println(correct);
         } else {
-            correct = "TRUE";
+            correct = context.getResources().getString(R.string.true_);
         }
     }
+
     //判断输入首部是否真确
-    public void checkFirstCharacter()
-    {
+    public void checkFirstCharacter() {
         if (inputExpression.length() > 3 && inputExpression.charAt(0) == 'l'
                 && inputExpression.charAt(1) == 'o' && inputExpression.charAt(2) == 'g') {
-            correct = "ERROR: cannot start with 'log'";
+            correct = context.getResources().getString(R.string.error_cannot_start_with);
         } else {
-            correct = "TRUE";
+            correct = context.getResources().getString(R.string.true_);
         }
     }
+
     //判断（）的数量是否相等！！
-    public void CheckBracketSymmetry()
-    {
+    public void CheckBracketSymmetry() {
         int num1 = 0;
         int num2 = 0;
         char[] chars = inputExpression.toCharArray();
@@ -88,16 +112,16 @@ public class InputConnect {
             if (chars[i] == ')')
                 num2++;
         if (num1 > num2) {
-            correct = "WARNING: '(' > ')' 默认在末尾追加 ')'";
-        } else if(num1 < num2) {
-            correct = "WARNING: '(' < ')' 默认在开始追加 '('";
+            correct = context.getResources().getString(R.string.warning_default_add_at_end);
+        } else if (num1 < num2) {
+            correct = context.getResources().getString(R.string.warning_default_add_at_start);
         } else {
-            correct = "TRUE";
+            correct = context.getResources().getString(R.string.true_);
         }
     }
+
     //判断（）的顺序是否正确！
-    public void CheckBracketOrder()
-    {
+    public void CheckBracketOrder() {
         int num1 = 0;
         int num2 = 0;
         char[] chars = inputExpression.toCharArray();
@@ -109,26 +133,26 @@ public class InputConnect {
                 if (chars[i] == ')')
                     num2++;
             if (num1 < num2) {
-                correct = "ERROR: the order of '(' and ')'";
+                correct = context.getResources().getString(R.string.error_bracket_order);
                 break;
             } else {
-                correct = "TRUE";
+                correct = context.getResources().getString(R.string.true_);
             }
         }
     }
+
     //判断是否有两个小数点的数据！！！
-    public void CheckDecimalPoint()
-    {
+    public void CheckDecimalPoint() {
         String doublePoint = inputExpression.replaceAll("[0-9]+\\.[0-9]+\\.[0-9]", "double.");
         if (doublePoint.indexOf("double.") > -1) {
-            correct = "ERROR: a number has more '.'";
+            correct = context.getResources().getString(R.string.error_multiple_point);
         } else {
-            correct = "TRUE";
+            correct = context.getResources().getString(R.string.true_);
         }
     }
+
     //判断是否有连接错误！！！
-    public void CheckConnectOrder()
-    {
+    public void CheckConnectOrder() {
         String string = inputExpression;
         string = string.replace("asin", "r");
         string = string.replace("acos", "r");
@@ -166,9 +190,9 @@ public class InputConnect {
                 || string.indexOf("kh") > -1 || string.indexOf("dh") > -1
                 || string.indexOf("cd") > -1 || string.indexOf("ld") > -1
                 || string.indexOf("hd") > -1 || string.indexOf("dd") > -1) {
-            correct = "ERROR: order of connection has wrong";
+            correct = context.getResources().getString(R.string.error_connection_order);
         } else {
-            correct = "TRUE";
+            correct = context.getResources().getString(R.string.true_);
         }
     }
 

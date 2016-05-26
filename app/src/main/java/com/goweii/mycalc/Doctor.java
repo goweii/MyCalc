@@ -49,9 +49,6 @@ public class Doctor {
     public void replace() {
         NewInputExpression = NewInputExpression.replace("×", "*");
         NewInputExpression = NewInputExpression.replace("÷", "/");
-        NewInputExpression = NewInputExpression.replace(")", "+0)"); // 避免（123）情况崩溃
-        NewInputExpression = NewInputExpression.replace("(-", "(0-"); // 避免（-123）情况崩溃
-        NewInputExpression = NewInputExpression.replace("(", "(0+"); //避免（1*1）情况崩溃
         NewInputExpression = NewInputExpression.replace("%", "/100)");
         NewInputExpression = NewInputExpression.replace("²√", "2√");
         NewInputExpression = NewInputExpression.replace("²", "^2");
