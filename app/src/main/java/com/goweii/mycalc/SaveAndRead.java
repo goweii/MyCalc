@@ -61,8 +61,8 @@ public class SaveAndRead {
         Map<String, String> params = new HashMap<String, String>();
         SharedPreferences preferences =
                 context.getSharedPreferences("saveandread", context.MODE_PRIVATE);
-        params.put("strI", preferences.getString("strI", ""));
-        params.put("strO", preferences.getString("strO", ""));
+        params.put("strIn", preferences.getString("strIn", ""));
+        params.put("strOut", preferences.getString("strOut", ""));
         return params;
     }
     public Map<String, String> read1()

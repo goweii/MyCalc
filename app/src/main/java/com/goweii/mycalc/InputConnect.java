@@ -60,11 +60,10 @@ public class InputConnect {
                 || inputExpression.endsWith("7") || inputExpression.endsWith("8")
                 || inputExpression.endsWith("9") || inputExpression.endsWith("0")
                 || inputExpression.endsWith(")"))) {
-            correct = "ERROR: cannot end with '" + inputExpression.charAt(inputExpression.length() - 1) + "'";
+            correct = "ERROR: cannot end with that";
         } else {
             correct = "TRUE";
         }
-        System.out.println(inputExpression);
     }
     //判断输入首部是否真确
     public void checkFirstCharacter()
@@ -75,7 +74,6 @@ public class InputConnect {
         } else {
             correct = "TRUE";
         }
-        System.out.println(inputExpression);
     }
     //判断（）的数量是否相等！！
     public void CheckBracketSymmetry()
@@ -90,13 +88,12 @@ public class InputConnect {
             if (chars[i] == ')')
                 num2++;
         if (num1 > num2) {
-            correct = "ERROR: '(' > ')' 默认在末尾追加 ')'";
+            correct = "WARNING: '(' > ')' 默认在末尾追加 ')'";
         } else if(num1 < num2) {
-            correct = "ERROR: '(' < ')' 默认在开始追加 '('";
+            correct = "WARNING: '(' < ')' 默认在开始追加 '('";
         } else {
             correct = "TRUE";
         }
-        System.out.println(inputExpression);
     }
     //判断（）的顺序是否正确！
     public void CheckBracketOrder()
@@ -118,7 +115,6 @@ public class InputConnect {
                 correct = "TRUE";
             }
         }
-        System.out.println(inputExpression);
     }
     //判断是否有两个小数点的数据！！！
     public void CheckDecimalPoint()
@@ -129,39 +125,47 @@ public class InputConnect {
         } else {
             correct = "TRUE";
         }
-        System.out.println(inputExpression);
     }
     //判断是否有连接错误！！！
     public void CheckConnectOrder()
     {
         String string = inputExpression;
-        string = string.replace("(-", "(0-");
-        string = string.replace("+", "#");
-        string = string.replace("-", "#");
-        string = string.replace("×", "#");
-        string = string.replace("÷", "#");
-        string = string.replace("%", "@");
-        string = string.replace("²√", "#");
-        string = string.replace("²", "@");
-        string = string.replace("√", "#");
-        string = string.replace("ln", "#");
-        string = string.replace("log", "#");
-        string = string.replace("!", "@");
+        string = string.replace("asin", "r");
+        string = string.replace("acos", "r");
+        string = string.replace("atan", "r");
+        string = string.replace("sin", "r");
+        string = string.replace("cos", "r");
+        string = string.replace("tan", "r");
+        string = string.replace("log", "t");
+        string = string.replace("lg", "r");
+        string = string.replace("ln", "r");
+        string = string.replace("²√", "r");
+        string = string.replace("+", "t");
+        string = string.replace("-", "t");
+        string = string.replace("×", "t");
+        string = string.replace("÷", "t");
+        string = string.replace("%", "l");
+        string = string.replace("²", "l");
+        string = string.replace("√", "t");
+        string = string.replace("!", "l");
+        string = string.replace("^", "t");
+        string = string.replace("π", "c");
+        string = string.replace("e", "c");
+        string = string.replace("Φ", "c");
         string = string.replace(".", "#");
-        string = string.replace("^", "#");
-        string = string.replace("asin", "&");
-        string = string.replace("acos", "&");
-        string = string.replace("atan", "&");
-        string = string.replace("sin", "&");
-        string = string.replace("cos", "&");
-        string = string.replace("tan", "&");
-        string = string.replaceAll("[0-9]\\(", "~");
-        string = string.replaceAll("\\)[0-9]", "~");
-        if (string.indexOf("##") > -1 || string.indexOf("&#") > -1 ||
-                string.indexOf("#@") > -1 ||
-                string.indexOf("(#") > -1 || string.indexOf("(@") > -1 ||
-                string.indexOf("#)") > -1 || string.indexOf("&)") > -1
-                || string.indexOf("~") > -1) {
+        string = string.replace("(", "k");
+        string = string.replace(")", "h");
+        string = string.replaceAll("[0-9]", "n");
+        if (string.indexOf("dc") > -1 || string.indexOf("rl") > -1
+                || string.indexOf("tl") > -1 || string.indexOf("kl") > -1
+                || string.indexOf("dl") > -1 || string.indexOf("dr") > -1
+                || string.indexOf("rt") > -1 || string.indexOf("tt") > -1
+                || string.indexOf("kt") > -1 || string.indexOf("dt") > -1
+                || string.indexOf("dk") > -1 || string.indexOf("rh") > -1
+                || string.indexOf("rh") > -1 || string.indexOf("th") > -1
+                || string.indexOf("kh") > -1 || string.indexOf("dh") > -1
+                || string.indexOf("cd") > -1 || string.indexOf("ld") > -1
+                || string.indexOf("hd") > -1 || string.indexOf("dd") > -1) {
             correct = "ERROR: order of connection has wrong";
         } else {
             correct = "TRUE";

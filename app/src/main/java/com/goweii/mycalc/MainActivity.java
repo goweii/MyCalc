@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chenjishi.slideupdemo.SlidingUpPaneLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -30,13 +29,16 @@ import java.util.Map;
 public class MainActivity extends Activity {
 
     private SlidingMenu slidingMenu;
+
     /**
+     * （暂时未实现）
      * 设置输出数字的显示格式：
+     * 默认（长度大于15以科学计数法，否则以小数    DEFAULT
      * 小数(默认格式） DECIMAL
      * 百分数         PERCENTAGE
      * 科学计数法     SCIENTIFIC
      */
-    private static final String OUTPUT_NUMBER_FORMAT = "DECIMAL";
+    private String output_number_format = "DECIMAL";
 
     private EditText editTextIn;
     private EditText editTextOut;
@@ -57,6 +59,9 @@ public class MainActivity extends Activity {
     private TextView textViewI8;
     private TextView textViewO8;
 
+    /**
+     * 双击退出时长
+     */
     private long mExitTime;
 
     //存放历史记录！！
@@ -80,8 +85,8 @@ public class MainActivity extends Activity {
     String strI8;
     String strO8;
 
-    private static final String STRINGI = "stringi";
-    private static final String STRINGR = "stringr";
+    private static final String STRINGI = "strIn";
+    private static final String STRINGR = "strOut";
 
 
     @Override
@@ -186,7 +191,6 @@ public class MainActivity extends Activity {
         return statusBarHeight;
     }
 
-
     //获取控件ID并设置OnClickListener监听事件
     private void viewSetOnClickListener() {
         //获取控件ID
@@ -195,7 +199,7 @@ public class MainActivity extends Activity {
         textViewI8 = (TextView) this.findViewById(R.id.textView_i8);
         textViewO8 = (TextView) this.findViewById(R.id.textView_o8);
         textViewI7 = (TextView) this.findViewById(R.id.textView_i7);
-        textViewO7 = (TextView) this.findViewById(R.id.textView_i7);
+        textViewO7 = (TextView) this.findViewById(R.id.textView_o7);
         textViewI6 = (TextView) this.findViewById(R.id.textView_i6);
         textViewO6 = (TextView) this.findViewById(R.id.textView_o6);
         textViewI5 = (TextView) this.findViewById(R.id.textView_i5);
@@ -339,8 +343,7 @@ public class MainActivity extends Activity {
 
     //初始化历史记录textView
     public void initHistory() {
-
-        //----------------初始化历史记�?-----------------------------
+        //----------------初始化历史记录，恢复输入输出框-----------------------------
         saveAndRead = new SaveAndRead(this);
         Map<String, String> params;
         params = saveAndRead.read8();
@@ -392,21 +395,19 @@ public class MainActivity extends Activity {
         strOut = editTextOut.getText().toString();
     }
 
-    // ---------------------------------------------------------------------------------
     private final class ButtonClickListener_menu_setting implements View.OnClickListener {
         public void onClick(View v) {
             slidingMenu.showContent(true);
         }
     }
 
-    // ---------------------------------------------------------------------------------
     private final class ButtonClickListener_menu_about implements View.OnClickListener {
         public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this, AboutActivity.class);
             MainActivity.this.startActivity(intent);
             MainActivity.this.overridePendingTransition(R.anim.about_enter, R.anim.about_out);
         }
-    }// ---------------------------------------------------------------------------------
+    }
 
     private final class ButtonClickListener_menu_quit implements View.OnClickListener {
         public void onClick(View v) {
@@ -424,273 +425,89 @@ public class MainActivity extends Activity {
     }
 
     // ---------------------------------------------------------------------------------
+    private void ButtonClickListenerInputProcess(String strInputCurrent){
+        //赋初始值
+        String inputCurrent = strInputCurrent;
+        //用于输入字符
+        Editable editable = editTextIn.getEditableText();
+        //获取光标位置和已输入表达式
+        int index = editTextIn.getSelectionStart();
+        String inputExpression = editTextIn.getText().toString();
+        //获取新光标位置，并设置
+        WithinOperator withinOperator = new WithinOperator(inputExpression, index);
+        index = withinOperator.getNewIndex();
+        editTextIn.setSelection(index);
+        //获取新输入字符
+        NewInputCurrent newInputCurrent = new NewInputCurrent(inputExpression, inputCurrent, index);
+        inputCurrent = newInputCurrent.getNewInputCurrent();
+        //判断新字符是否为空，为空可不可输入报错
+        if (inputCurrent == null){
+            editTextOut.setText("ERROR:Illegal connection");
+        } else {
+            editable.insert(index, inputCurrent);
+            inputExpression = editTextIn.getText().toString();
+            InputConnect inputConnect = new InputConnect(inputExpression);
+            editTextOut.setText(inputConnect.checkConnect());
+        }
+    }
+
     private final class ButtonClickListener_1 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "1");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "1");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("1");
         }
     }
 
     private final class ButtonClickListener_2 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "2");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "2");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("2");
         }
     }
 
     private final class ButtonClickListener_3 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "3");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "3");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("3");
         }
     }
 
     private final class ButtonClickListener_4 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "4");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "4");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("4");
         }
     }
 
     private final class ButtonClickListener_5 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "5");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "5");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("5");
         }
     }
 
     private final class ButtonClickListener_6 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "6");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "6");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("6");
         }
     }
 
     private final class ButtonClickListener_7 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "7");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "7");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("7");
         }
     }
 
     private final class ButtonClickListener_8 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "8");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "8");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("8");
         }
     }
 
     private final class ButtonClickListener_9 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "9");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "9");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("9");
         }
     }
 
     private final class ButtonClickListener_0 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "0");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' || edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' || edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '.' || edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' || edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' || edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == 'g' || edit.charAt(index - 1) == 'n') {
-                edit.insert(index, "0");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("0");
         }
     }
 
@@ -700,8 +517,8 @@ public class MainActivity extends Activity {
             int index = editTextIn.getSelectionStart();
             Editable edit = editTextIn.getEditableText();
             String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
+            WithinOperator withinOperator = new WithinOperator(strEditTextIn, index);
+            int newIndex = withinOperator.getNewIndex();
             if (index == 0) {
             } else if (newIndex != index) {
                 editTextIn.setSelection(newIndex);
@@ -791,7 +608,6 @@ public class MainActivity extends Activity {
                                         edit.charAt(index - 1) == '㏑' ||
                                         edit.charAt(index - 1) == '㏒' ||
                                         edit.charAt(index - 1) == '√')) {
-                            System.out.println("5");
                             if (edit.charAt(index) >= '0' && edit.charAt(index) <= '9') {
                                 edit.insert(index, "(-");
                                 int i;
@@ -847,675 +663,158 @@ public class MainActivity extends Activity {
 
     private final class ButtonClickListener_dian implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9')
-                edit.insert(index, ".");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess(".");
         }
     }
 
     private final class ButtonClickListener_pai implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "π");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '^' ||
-                    edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == 'g' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ')
-                edit.insert(index, "π");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess("π");
         }
     }
 
     private final class ButtonClickListener_e implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "e");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '^' ||
-                    edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == 'g' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ')
-                edit.insert(index, "e");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess("e");
         }
     }
 
     private final class ButtonClickListener_fai implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "Φ");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '^' ||
-                    edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == 'g' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ')
-                edit.insert(index, "Φ");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess("Φ");
         }
     }
 
     private final class ButtonClickListener_bfh implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ')
-                edit.insert(index, "%");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess("%");
         }
     }
 
     private final class ButtonClickListener_x2 implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ')
-                edit.insert(index, "²");
-            String strEditTextInNew = editTextIn.getText().toString();
-            InputConnect inputConnect = new InputConnect(strEditTextInNew);
-            String strEditTextOut = inputConnect.checkConnect();
-            editTextOut.setText(strEditTextOut);
+            ButtonClickListenerInputProcess("²");
         }
     }
 
     private final class ButtonClickListener_xy implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ') {
-                edit.insert(index, "^");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("^");
         }
     }
 
     private final class ButtonClickListener_10x implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "10^");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '(') {
-                edit.insert(index, "10^");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("10^");
         }
     }
 
     private final class ButtonClickListener_log implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ') {
-                edit.insert(index, "log");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("log");
         }
     }
 
     private final class ButtonClickListener_lg implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "lg");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '(') {
-                edit.insert(index, "lg");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("lg");
         }
     }
 
     private final class ButtonClickListener_ln implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "ln");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '(') {
-                edit.insert(index, "ln");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("ln");
         }
     }
 
     private final class ButtonClickListener_2gx implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "²√");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '(') {
-                edit.insert(index, "²√");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("²√");
         }
     }
 
     private final class ButtonClickListener_ygx implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ') {
-                edit.insert(index, "√");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("√");
         }
     }
 
     private final class ButtonClickListener_jc implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9' ||
-                    edit.charAt(index - 1) == ')' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ') {
-                edit.insert(index, "!");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("!");
         }
     }
 
     private final class ButtonClickListener_sin implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "sin");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "sin");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("sin");
         }
     }
 
     private final class ButtonClickListener_cos implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "cos");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "cos");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("cos");
         }
     }
 
     private final class ButtonClickListener_tan implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "tan");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "tan");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("tan");
         }
     }
 
     private final class ButtonClickListener_asin implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "asin");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "asin");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("asin");
         }
     }
 
     private final class ButtonClickListener_acos implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "acos");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "acos");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("acos");
         }
     }
 
     private final class ButtonClickListener_atan implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "atan");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷') {
-                edit.insert(index, "atan");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("atan");
         }
     }
 
 
     private final class ButtonClickListener_qkh implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-                edit.insert(index, "(");
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if (edit.charAt(index - 1) == '+' ||
-                    edit.charAt(index - 1) == '-' ||
-                    edit.charAt(index - 1) == '×' ||
-                    edit.charAt(index - 1) == '÷' ||
-                    edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == '^' ||
-                    edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == 'n' ||
-                    edit.charAt(index - 1) == 's' ||
-                    edit.charAt(index - 1) == '√' ||
-                    edit.charAt(index - 1) == 'g' ||
-                    edit.charAt(index - 1) == '㏑' ||
-                    edit.charAt(index - 1) == '㏒') {
-                edit.insert(index, "(");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("(");
         }
     }
 
     private final class ButtonClickListener_hkh implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '²' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ' ||
-                    edit.charAt(index - 1) == '%' ||
-                    edit.charAt(index - 1) == ')') {
-                edit.insert(index, ")");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess(")");
         }
     }
 
     private final class ButtonClickListener_jia implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '²' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ' ||
-                    edit.charAt(index - 1) == ')') {
-                edit.insert(index, "+");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("+");
         }
     }
 
     private final class ButtonClickListener_jian implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '²' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ' ||
-                    edit.charAt(index - 1) == '(' ||
-                    edit.charAt(index - 1) == ')') {
-                edit.insert(index, "-");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("-");
         }
     }
 
     private final class ButtonClickListener_cheng implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '²' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ' ||
-                    edit.charAt(index - 1) == ')') {
-                edit.insert(index, "×");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("×");
         }
     }
 
     private final class ButtonClickListener_chu implements View.OnClickListener {
         public void onClick(View v) {
-            int index = editTextIn.getSelectionStart();
-            Editable edit = editTextIn.getEditableText();
-            String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
-            if (index == 0) {
-            } else if (newIndex != index) {
-                editTextIn.setSelection(newIndex);
-            } else if ((edit.charAt(index - 1) >= '0' && edit.charAt(index - 1) <= '9') ||
-                    edit.charAt(index - 1) == '²' ||
-                    edit.charAt(index - 1) == 'π' ||
-                    edit.charAt(index - 1) == 'e' ||
-                    edit.charAt(index - 1) == 'Φ' ||
-                    edit.charAt(index - 1) == ')') {
-                edit.insert(index, "÷");
-                String strEditTextInNew = editTextIn.getText().toString();
-                InputConnect inputConnect = new InputConnect(strEditTextInNew);
-                String strEditTextOut = inputConnect.checkConnect();
-                editTextOut.setText(strEditTextOut);
-            }
+            ButtonClickListenerInputProcess("÷");
         }
     }
 
@@ -1524,14 +823,14 @@ public class MainActivity extends Activity {
             int index = editTextIn.getSelectionStart();
             Editable edit = editTextIn.getEditableText();
             String strEditTextIn = editTextIn.getText().toString();
-            StringInput stringInput = new StringInput(strEditTextIn, index);
-            int newIndex = stringInput.getNewIndex();
+            WithinOperator withinOperator = new WithinOperator(strEditTextIn, index);
+            int newIndex = withinOperator.getNewIndex();
             if (index == 0) {
             }
             if (index > 0) {
                 if (newIndex != index) {
                     editTextIn.setSelection(newIndex);
-                    edit.delete(newIndex - stringInput.getDeleteNum(), newIndex);
+                    edit.delete(newIndex - withinOperator.getDeleteNum(), newIndex);
                     String strEditTextInNew = editTextIn.getText().toString();
                     InputConnect inputConnect = new InputConnect(strEditTextInNew);
                     String strEditTextOut = inputConnect.checkConnect();
@@ -1563,7 +862,8 @@ public class MainActivity extends Activity {
                         String strEditTextOut = inputConnect.checkConnect();
                         editTextOut.setText(strEditTextOut);
                     } else if (newIndex > 1 && ((strEditTextIn.charAt(newIndex - 2) == 'l' && strEditTextIn.charAt(newIndex - 1) == 'n')
-                            || (strEditTextIn.charAt(newIndex - 2) == 'l' && strEditTextIn.charAt(newIndex - 1) == 'g'))) {
+                            || (strEditTextIn.charAt(newIndex - 2) == 'l' && strEditTextIn.charAt(newIndex - 1) == 'g')
+                            || (strEditTextIn.charAt(newIndex - 2) == '²' && strEditTextIn.charAt(newIndex - 1) == '√'))) {
                         edit.delete(newIndex - 2, newIndex);
                         String strEditTextInNew = editTextIn.getText().toString();
                         InputConnect inputConnect = new InputConnect(strEditTextInNew);
@@ -1603,12 +903,40 @@ public class MainActivity extends Activity {
                 String strEditTextOut = inputConnect.checkConnect();
                 if (strEditTextOut.startsWith("ERROR")) {
                     editTextOut.setText(strEditTextOut);
+                } else if(strEditTextOut.startsWith("WARNING")){
+                    int num1 = 0;
+                    int num2 = 0;
+                    char[] chars = strEditTextIn.toCharArray();
+                    for (int i = 0; i < chars.length; i++)
+                        if (chars[i] == '(')
+                            num1++;
+                    for (int i = 0; i < chars.length; i++)
+                        if (chars[i] == ')')
+                            num2++;
+                    if (num1 > num2) {
+                        for(int i = 0; i < num1 - num2; i ++) {
+                            strEditTextIn = strEditTextIn + ")";
+                        }
+                    } else if(num1 < num2) {
+                        for(int i = 0; i < num1 - num2; i ++) {
+                            strEditTextIn = "(" + strEditTextIn;
+                        }
+                    }
+                    strEditTextIn = doctor.getNewInputExpression();
+                    Expression expression = new Expression(strEditTextIn);//计算结果
+                    String result = expression.getresult();    //得到结果
+                    OutputFormat outputFormat = new OutputFormat(output_number_format, result);
+                    result = outputFormat.getResult();
+                    result = doctor.getResult(result);
+                    editTextOut.setText(result);
                 } else {
                     strEditTextIn = doctor.getNewInputExpression();
-                    expression result = new expression(strEditTextIn);//计算结果
-                    String resultString = result.getresult();    //得到结果
-                    resultString = doctor.getResult(resultString);
-                    editTextOut.setText(resultString);
+                    Expression expression = new Expression(strEditTextIn);//计算结果
+                    String result = expression.getresult();    //得到结果
+                    OutputFormat outputFormat = new OutputFormat(output_number_format, result);
+                    result = outputFormat.getResult();
+                    result = doctor.getResult(result);
+                    editTextOut.setText(result);
                 }
             }
             //-----历史记录-----
@@ -1670,453 +998,115 @@ public class MainActivity extends Activity {
 
 
     //---------历史记录按钮时间。上屏！-------------
+    private void ButtonClickListenerHistoryInputProcess(TextView textView){
+        String strHistory = textView.getText().toString();
+        if (textView.length() > 0
+                && !(strHistory.indexOf("ERROR")  > -1
+                || strHistory.indexOf("WORNING")  > -1)) {
+            int index = editTextIn.getSelectionStart();
+            Editable edit = editTextIn.getEditableText();
+            if (index == 0) {
+                edit.insert(index, "(" + strHistory + ")");
+            } else if (edit.charAt(index - 1) != '.') {
+                edit.insert(index, "(" + strHistory + ")");
+            }
+        }
+    }
+
     private final class ButtonClickListener_i1 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI1.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI1.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI1);
         }
     }
 
     private final class ButtonClickListener_o1 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO1.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO1.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO1);
         }
     }
 
     private final class ButtonClickListener_i2 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI2.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI2.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI2);
         }
     }
 
     private final class ButtonClickListener_o2 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO2.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO2.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO2);
         }
     }
 
     private final class ButtonClickListener_i3 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI3.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI3.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI3);
         }
     }
 
     private final class ButtonClickListener_o3 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO3.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO3.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO3);
         }
     }
 
     private final class ButtonClickListener_i4 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI4.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI4.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI4);
         }
     }
 
     private final class ButtonClickListener_o4 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO4.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO4.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO4);
         }
     }
 
     private final class ButtonClickListener_i5 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI5.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI5.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI5);
         }
     }
 
     private final class ButtonClickListener_o5 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO5.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO5.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO5);
         }
     }
 
     private final class ButtonClickListener_i6 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI6.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI6.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI6);
         }
     }
 
     private final class ButtonClickListener_o6 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO6.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO6.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO6);
         }
     }
 
     private final class ButtonClickListener_i7 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI7.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI7.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI7);
         }
     }
 
     private final class ButtonClickListener_o7 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO7.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO7.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO7);
         }
     }
 
     private final class ButtonClickListener_i8 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewI8.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewI8.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewI8);
         }
     }
 
     private final class ButtonClickListener_o8 implements View.OnClickListener {
         public void onClick(View v) {
-            if (textViewO8.length() > 0) {
-                int index = editTextIn.getSelectionStart();
-                Editable edit = editTextIn.getEditableText();
-                String stri1 = textViewO8.getText().toString();
-                String string = "(" + stri1 + ")";
-                if (index == 0) {
-                    edit.insert(index, string);
-                } else if (edit.charAt(index - 1) == '+' ||
-                        edit.charAt(index - 1) == '-' ||
-                        edit.charAt(index - 1) == '×' ||
-                        edit.charAt(index - 1) == '÷' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == '^' ||
-                        edit.charAt(index - 1) == '(' ||
-                        edit.charAt(index - 1) == 'n' ||
-                        edit.charAt(index - 1) == 's' ||
-                        edit.charAt(index - 1) == '√' ||
-                        edit.charAt(index - 1) == 'g' ||
-                        edit.charAt(index - 1) == '㏑' ||
-                        edit.charAt(index - 1) == '㏒') {
-                    edit.insert(index, string);
-                }
-            }
+            ButtonClickListenerHistoryInputProcess(textViewO8);
         }
-
     }
 
 
@@ -2124,7 +1114,6 @@ public class MainActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if ((System.currentTimeMillis() - mExitTime) > 800) {
-                Toast.makeText(this, R.string.doubletoexit, Toast.LENGTH_SHORT).show();
                 mExitTime = System.currentTimeMillis();
             } else {
                 saveAndRead.save(strIn, strOut,
@@ -2156,22 +1145,16 @@ public class MainActivity extends Activity {
         super.onSaveInstanceState(outState);
         strIn = editTextIn.getText().toString();
         strOut = editTextOut.getText().toString();
-//		outState.putString(STRINGI, stringi);
-//		outState.putString(STRINGR, stringr);
 
-        System.out.println("sdfsdfsadfsadfsadfsafsafsafsa");
-
-        saveAndRead.save(strIn, strOut,
-                strI1, strO1,
-                strI2, strO2,
-                strI3, strO3,
-                strI4, strO4,
-                strI5, strO5,
-                strI6, strO6,
-                strI7, strO7,
-                strI8, strO8);
+        saveAndRead.save(strIn, strOut, strI1, strO1, strI2, strO2,
+                strI3, strO3, strI4, strO4, strI5, strO5,
+                strI6, strO6, strI7, strO7, strI8, strO8);
     }
 
+    /**
+     * 清空历史记录
+     * 若清空后，未进行任何计算，则不保存清空状态，即下次打开任然为之前未清空状态
+     */
     private final class ButtonClickListener_history_clean implements View.OnClickListener {
         public void onClick(View v) {
             textViewI8.setText("");

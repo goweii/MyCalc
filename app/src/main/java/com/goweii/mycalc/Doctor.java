@@ -24,10 +24,24 @@ public class Doctor {
         return NewInputExpression;
     }
 
+    //修正double类型的误差。去除2.0的.0。
     public String getResult(String result){
         NewResult = result;
-        dr1();
-        dr2();
+        int i = NewResult.indexOf(".");
+        if (i > -1) {
+            DecimalFormat afFormat = new DecimalFormat("#0.0000000000000000000000000");
+            NewResult = afFormat.format(Double.parseDouble(NewResult));
+            for (int j = NewResult.length() - 1; j > i; j--) {
+                if (NewResult.charAt(j) == '0') {
+                    NewResult = NewResult.substring(0, j);
+                } else {
+                    break;
+                }
+            }
+            if (NewResult.charAt(NewResult.length() - 1) == '.') {
+                NewResult = NewResult.substring(0, NewResult.length() - 1);
+            }
+        }
         return NewResult;
     }
 
@@ -52,88 +66,41 @@ public class Doctor {
         NewInputExpression = NewInputExpression.replace("tan", "1t");
         NewInputExpression = NewInputExpression.replace("!", "!1");
         //----------------------πeΦ--------------------------
-        NewInputExpression = NewInputExpression.replace("ππ", "(π*π)");
-        NewInputExpression = NewInputExpression.replace("ee", "(e*e)");
-        NewInputExpression = NewInputExpression.replace("ΦΦ", "(Φ*Φ)");
-        NewInputExpression = NewInputExpression.replace("πe", "(π*e)");
-        NewInputExpression = NewInputExpression.replace("πΦ", "(π*Φ)");
-        NewInputExpression = NewInputExpression.replace("eΦ", "(e*Φ)");
-        NewInputExpression = NewInputExpression.replace("eπ", "(e*π)");
-        NewInputExpression = NewInputExpression.replace("Φπ", "(Φ*π)");
-        NewInputExpression = NewInputExpression.replace("Φe", "(Φ*e)");
-        //-------------------STRING_PAI--------------------------------
-        NewInputExpression = NewInputExpression.replace(")π", ")*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("0π", "0*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("1π", "1*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("2π", "2*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("3π", "3*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("4π", "4*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("5π", "5*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("6π", "6*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("7π", "7*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("8π", "8*" + STRING_PAI);
-        NewInputExpression = NewInputExpression.replace("9π", "9*" + STRING_PAI);
+
+        NewInputExpression = NewInputExpression.replace("π", "(π)");
+        NewInputExpression = NewInputExpression.replace("e", "(e)");
+        NewInputExpression = NewInputExpression.replace("Φ", "(Φ)");
+        NewInputExpression = NewInputExpression.replace(")(", ")*(");
+
         NewInputExpression = NewInputExpression.replace("π", STRING_PAI);
-        //--------------------e-------------------------------
-        NewInputExpression = NewInputExpression.replace(")e", ")*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("0e", "0*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("1e", "1*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("2e", "2*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("3e", "3*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("4e", "4*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("5e", "5*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("6e", "6*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("7e", "7*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("8e", "8*" + STRING_E);
-        NewInputExpression = NewInputExpression.replace("9e", "9*" + STRING_E);
         NewInputExpression = NewInputExpression.replace("e", STRING_E);
-        //--------------------fai-----------------------------
-        NewInputExpression = NewInputExpression.replace(")Φ", ")*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("0Φ", "0*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("1Φ", "1*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("2Φ", "2*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("3Φ", "3*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("4Φ", "4*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("5Φ", "5*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("6Φ", "6*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("7Φ", "7*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("8Φ", "8*" + STRING_FAI);
-        NewInputExpression = NewInputExpression.replace("9Φ", "9*" + STRING_FAI);
         NewInputExpression = NewInputExpression.replace("Φ", STRING_FAI);
+
+        NewInputExpression = NewInputExpression.replace("0(", "0*(");
+        NewInputExpression = NewInputExpression.replace("1(", "1*(");
+        NewInputExpression = NewInputExpression.replace("2(", "2*(");
+        NewInputExpression = NewInputExpression.replace("3(", "3*(");
+        NewInputExpression = NewInputExpression.replace("4(", "4*(");
+        NewInputExpression = NewInputExpression.replace("5(", "5*(");
+        NewInputExpression = NewInputExpression.replace("6(", "6*(");
+        NewInputExpression = NewInputExpression.replace("7(", "7*(");
+        NewInputExpression = NewInputExpression.replace("8(", "8*(");
+        NewInputExpression = NewInputExpression.replace("9(", "9*(");
+        NewInputExpression = NewInputExpression.replace(")0", ")*0");
+        NewInputExpression = NewInputExpression.replace(")1", ")*1");
+        NewInputExpression = NewInputExpression.replace(")2", ")*2");
+        NewInputExpression = NewInputExpression.replace(")3", ")*3");
+        NewInputExpression = NewInputExpression.replace(")4", ")*4");
+        NewInputExpression = NewInputExpression.replace(")5", ")*5");
+        NewInputExpression = NewInputExpression.replace(")6", ")*6");
+        NewInputExpression = NewInputExpression.replace(")7", ")*7");
+        NewInputExpression = NewInputExpression.replace(")8", ")*8");
+        NewInputExpression = NewInputExpression.replace(")9", ")*9");
 
         NewInputExpression = NewInputExpression.replace(")", "+0)"); // 避免（123）情况崩溃
         NewInputExpression = NewInputExpression.replace("(-", "(0-"); // 避免（-123）情况崩溃
         NewInputExpression = NewInputExpression.replace("(", "(0+"); //避免（1*1）情况崩溃
 
         NewInputExpression = "0+" + NewInputExpression;
-    }
-
-    //修正double类型的误差。去除2.0的.0。
-    public void dr1() {
-        int i = NewResult.indexOf(".");
-        if (i > -1) {
-            DecimalFormat afFormat = new DecimalFormat("#0.000000000000000");
-            NewResult = afFormat.format(Double.parseDouble(NewResult));
-            for (int j = NewResult.length() - 1; j > i; j--) {
-                if (NewResult.charAt(j) == '0') {
-                    NewResult = NewResult.substring(0, j);
-                } else {
-                    break;
-                }
-            }
-            if (NewResult.charAt(NewResult.length() - 1) == '.') {
-                NewResult = NewResult.substring(0, NewResult.length() - 1);
-            }
-        }
-        System.out.println(NewResult);
-    }
-
-    //修正为科学计数法10^x
-    public void dr2() {
-        if (NewResult.indexOf('E') > -1) {
-            NewResult = NewResult.replaceAll("E", "×10^");
-        } else {
-            dr1();
-        }
     }
 }

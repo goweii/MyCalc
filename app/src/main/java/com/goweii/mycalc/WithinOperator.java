@@ -3,12 +3,12 @@ package com.goweii.mycalc;
  * Created by cuizhen on 16/05/20.
  */
 
-public class StringInput {
+public class WithinOperator {
     private String newInputExpression;
     private int newIndex;
     private int deleteNum;
 
-    public StringInput(String inputExpression, int index){
+    public WithinOperator(String inputExpression, int index){
         newIndex = index;
         newInputExpression = inputExpression;
     }
@@ -124,6 +124,16 @@ public class StringInput {
                 || (0 < newIndex && newIndex < newInputExpression.length()
                 && newInputExpression.charAt(newIndex - 1) == 'l'
                 && newInputExpression.charAt(newIndex) == 'n')){
+            deleteNum =2;
+            return newIndex + 1;
+        }
+        //平方根
+        else if((0 < newIndex && newIndex < newInputExpression.length()
+                && newInputExpression.charAt(newIndex - 1) == '²'
+                && newInputExpression.charAt(newIndex) == '√')
+                || (0 < newIndex && newIndex < newInputExpression.length()
+                && newInputExpression.charAt(newIndex - 1) == '²'
+                && newInputExpression.charAt(newIndex) == '√')){
             deleteNum =2;
             return newIndex + 1;
         }
