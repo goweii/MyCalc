@@ -4,8 +4,8 @@
     <string name="doubletoexit">Quit On Double Click</string>
     <string name="about">About</string>
     <string name="about_name">MyCalc</string>
-    <string name="about_version">Version Number:Beta2.1.1</string>
-    <string name="about_date">Release Time:2016/05/23</string>
+    <string name="about_version">Version Number:Release2.2.0</string>
+    <string name="about_date">Release Time:2016/05/27</string>
     <string name="about_developer">Developer:Goweii</string>
     <string name="about_email">E-mail:goweii@163.com</string>
     <string name="about_button">BACK</string>
@@ -30,8 +30,8 @@
     <string name="error_bracket_order">ERROR:Left and right bracket order error</string>
     <string name="error_multiple_point">ERROR:Number contains multiple point</string>
     <string name="error_connection_order">ERROR:Expression connection order error</string>
-    <string name="error_illegal">ERROR:Illegal input</string>
-    <string name="error_nan">ERROR:Invalid input</string>
+    <string name="error_invalid">ERROR:Invalid input</string>
+    <string name="error_nan">ERROR:Illegal input</string>
     <string name="error_infinite">ERROR:Infinite</string>
     <string name="true_">TRUE</string>
 

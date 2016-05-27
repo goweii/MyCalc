@@ -23,23 +23,23 @@ public class InputConnect {
     public String checkConnect() {
         if (inputExpression.length() == 0) {
         } else {
-            for(boolean i = true; i == true; i = false){
-                if (correct == "TRUE") {
+            for(boolean i = true; i; i = false){
+                if (!correct.contains(":")) {
                     checkEndWithNumber();
                 }
-                if (correct == "TRUE") {
+                if (!correct.contains(":")) {
                     checkFirstCharacter();
                 }
-                if (correct == "TRUE") {
+                if (!correct.contains(":")) {
                     CheckBracketSymmetry();
                 }
-                if (correct == "TRUE") {
+                if (!correct.contains(":")) {
                     CheckBracketOrder();
                 }
-                if (correct == "TRUE") {
+                if (!correct.contains(":")) {
                     CheckDecimalPoint();
                 }
-                if (correct == "TRUE") {
+                if (!correct.contains(":")) {
                     CheckConnectOrder();
                 }
             }

@@ -6,8 +6,8 @@
     <string name="doubletoexit">双击退出</string>
     <string name="about">关于</string>
     <string name="about_name">MyCalc</string>
-    <string name="about_version">版本号：公测版2.1.1</string>
-    <string name="about_date">发布日期：2015年5月23日</string>
+    <string name="about_version">版本号：正式版2.2.0</string>
+    <string name="about_date">发布日期：2016年5月27日</string>
     <string name="about_developer">开发者：Goweii</string>
     <string name="about_email">邮箱:goweii@163.com</string>
     <string name="about_button">返回</string>
@@ -32,8 +32,8 @@
     <string name="error_bracket_order">错误:左右括号顺序错误</string>
     <string name="error_multiple_point">错误:含有多小数点数据</string>
     <string name="error_connection_order">错误:表达式含有连接错误</string>
-    <string name="error_illegal">错误:非法输入</string>
-    <string name="error_nan">错误:无效输入</string>
+    <string name="error_invalid">错误:无效输入</string>
+    <string name="error_nan">错误:非法输入</string>
     <string name="error_infinite">错误:无穷</string>
     <string name="true_">正确</string>
 

@@ -19,6 +19,15 @@ public class SplashActivity extends Activity
         setContentView(R.layout.activity_splash);
 
         /**
+         * 用于打开应用后，按HOME键进入后台
+         * 在此点击应用图标直接打开Mainactivity而不是SplashActivity
+         */
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
+
+        /**
          * //有米广告初始化应用信息：请务必在应用第一个 Activity（启动的第一个类）的 onCreate 中调用以下代码
          * 注意：
          * appId 和 appSecret 分别为应用的发布 ID 和密钥，由有米后台自动生成，通过在有米后台 > 应用详细信息 可以获得。

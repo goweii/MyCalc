@@ -444,9 +444,9 @@ public class MainActivity extends Activity {
         //获取新输入字符
         NewInputCurrent newInputCurrent = new NewInputCurrent(inputExpression, inputCurrent, index);
         inputCurrent = newInputCurrent.getNewInputCurrent();
-        //判断新字符是否为空，为空可不可输入报错
+        //判断新字符是否为空，为空不可输入报错
         if (inputCurrent == null){
-            editTextOut.setText(getResources().getString(R.string.error_illegal));
+            editTextOut.setText(getResources().getString(R.string.error_invalid));
         } else {
             editable.insert(index, inputCurrent);
             inputExpression = editTextIn.getText().toString();
@@ -904,34 +904,28 @@ public class MainActivity extends Activity {
                 Doctor doctor = new Doctor(strEditTextIn);
                 InputConnect inputConnect = new InputConnect(strEditTextIn);
                 String strEditTextOut = inputConnect.checkConnect();
-                if (strEditTextOut.startsWith("ERROR") || strEditTextOut.startsWith("错误")) {
-                    editTextOut.setText(strEditTextOut);
-                } else if(strEditTextOut.startsWith("WARNING") || strEditTextOut.startsWith("警告")){
-                    int num1 = 0;
-                    int num2 = 0;
-                    char[] chars = strEditTextIn.toCharArray();
-                    for (int i = 0; i < chars.length; i++)
-                        if (chars[i] == '(')
-                            num1++;
-                    for (int i = 0; i < chars.length; i++)
-                        if (chars[i] == ')')
-                            num2++;
-                    if (num1 > num2) {
-                        for(int i = 0; i < num1 - num2; i ++) {
-                            strEditTextIn = strEditTextIn + ")";
-                        }
-                    } else if(num1 < num2) {
-                        for(int i = 0; i < num1 - num2; i ++) {
-                            strEditTextIn = "(" + strEditTextIn;
-                        }
+
+                int num1 = 0;
+                int num2 = 0;
+                char[] chars = strEditTextIn.toCharArray();
+                for (int i = 0; i < chars.length; i++)
+                    if (chars[i] == '(')
+                        num1++;
+                for (int i = 0; i < chars.length; i++)
+                    if (chars[i] == ')')
+                        num2++;
+                if (num1 > num2) {
+                    for(int i = 0; i < num1 - num2; i ++) {
+                        strEditTextIn = strEditTextIn + ")";
                     }
-                    strEditTextIn = doctor.getNewInputExpression();
-                    Expression expression = new Expression(strEditTextIn);//计算结果
-                    String result = expression.getresult();    //得到结果
-                    OutputFormat outputFormat = new OutputFormat(output_number_format, result);
-                    result = outputFormat.getResult();
-                    result = doctor.getResult(result);
-                    editTextOut.setText(result);
+                } else if(num1 < num2) {
+                    for(int i = 0; i < num1 - num2; i ++) {
+                        strEditTextIn = "(" + strEditTextIn;
+                    }
+                }
+
+                if (strEditTextOut.indexOf(":") > -1) {
+                    editTextOut.setText(strEditTextOut);
                 } else {
                     strEditTextIn = doctor.getNewInputExpression();
                     Expression expression = new Expression(strEditTextIn);//计算结果
@@ -1012,8 +1006,8 @@ public class MainActivity extends Activity {
     private void ButtonClickListenerHistoryInputProcess(TextView textView){
         String strHistory = textView.getText().toString();
         if (textView.length() > 0
-                && !(strHistory.indexOf("ERROR")  > -1
-                || strHistory.indexOf("WORNING")  > -1)) {
+                && !(strHistory.indexOf(":")  > -1
+                || strHistory.indexOf(":")  > -1)) {
             int index = editTextIn.getSelectionStart();
             Editable edit = editTextIn.getEditableText();
             if (index == 0) {
